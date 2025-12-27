@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Room Expense App</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<h2>🏠 Roommates Expense App</h2>
+
+<form method="POST">
+    <input type="text" name="name" placeholder="Your Name" required>
+    <input type="number" step="0.01" name="amount" placeholder="Amount" required>
+    <input type="text" name="reason" placeholder="Reason">
+    <select name="category">
+        <option value="Food">🍔 Food</option>
+        <option value="Utilities">💡 Utilities</option>
+        <option value="Rent">🏠 Rent</option>
+        <option value="Entertainment">🎮 Entertainment</option>
+        <option value="Other">📦 Other</option>
+    </select>
+    <button>Add Expense</button>
+</form>
+
+<h3>Total Expense: ₹{{ "%.2f"|format(total) }}</h3>
+<h3>Each Person Pays: ₹{{ "%.2f"|format(split) }}</h3>
+<h3>Total Members: {{ members|length }}</h3>
+
+<h4>Per Person Spending:</h4>
+<ul style="list-style: none;">
+{% for person, amount in person_totals.items() %}
+    <li><strong>{{ person }}:</strong> ₹{{ "%.2f"|format(amount) }} 
+        {% if amount > split %}
+            <span style="color: green;">(+₹{{ "%.2f"|format(amount - split) }})</span>
+        {% elif amount < split %}
+            <span style="color: red;">(-₹{{ "%.2f"|format(split - amount) }})</span>
+        {% endif %}
+    </li>
+{% endfor %}
+</ul>
+
+<table>
+<tr>
+    <th>Date</th>
+    <th>Name</th>
+    <th>Amount</th>
+    <th>Category</th>
+    <th>Reason</th>
+    <th>Action</th>
+</tr>
+{% for e in expenses %}
+<tr>
+    <td>{{ e['date_added'][:16] }}</td>
+    <td>{{ e['name'] }}</td>
+    <td>₹{{ "%.2f"|format(e['amount']) }}</td>
+    <td>{{ e['category'] }}</td>
+    <td>{{ e['reason'] }}</td>
+    <td><a href="/delete/{{ e['id'] }}" onclick="return confirm('Delete this expense?')" style="color: red;">❌</a></td>
+</tr>
+{% endfor %}
+</table>
+
+</body>
+</html>
